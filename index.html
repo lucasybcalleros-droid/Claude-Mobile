@@ -91,6 +91,13 @@
   .seg.on{background:linear-gradient(180deg,var(--primary),var(--primary-2));color:#fff;border-color:transparent;box-shadow:0 8px 20px -8px var(--primary)}
   .seg.on small{color:rgba(255,255,255,.9)}
 
+  .mode-seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mode{background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px 12px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:5px;transition:.15s}
+  .mode .mt{font-weight:900;font-size:1rem;color:var(--ink);line-height:1.1}
+  .mode .md{font-size:.72rem;color:var(--mut);font-weight:600;line-height:1.3}
+  .mode.on{border-color:var(--primary);background:linear-gradient(180deg,#fff,#fff0f6);box-shadow:0 8px 20px -10px var(--primary)}
+  .mode.on .mt{color:var(--primary)}
+
   .chips{display:flex;flex-wrap:wrap;gap:9px}
   .chip{
     border:2px solid var(--line);background:#fff;color:var(--mut);
@@ -204,6 +211,20 @@
       </div>
 
       <div class="card block">
+        <h2><span class="dot"></span>Modo de jogo</h2>
+        <div class="mode-seg" id="modeSeg">
+          <button class="mode on" data-m="maratona">
+            <span class="mt">🔥 Maratona</span>
+            <span class="md">Quantas mímicas der dentro do tempo</span>
+          </button>
+          <button class="mode" data-m="single">
+            <span class="mt">🎯 1 por rodada</span>
+            <span class="md">Uma mímica por vez, no tempo escolhido</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card block">
         <h2><span class="dot"></span>Tempo por rodada</h2>
         <div class="segmented" id="timeSeg">
           <button class="seg" data-t="30">30<small>seg</small></button>
@@ -274,7 +295,7 @@
       <button class="icon-btn" id="quitSum" aria-label="Sair">✕</button>
     </div>
     <div class="summary-hero">
-      <div class="eyebrow">Deu o tempo!</div>
+      <div class="eyebrow" id="sumEyebrow">Fim da rodada</div>
       <div class="big display" id="sumTeam">Time 1</div>
     </div>
     <div class="tally">
@@ -405,11 +426,11 @@ const S = {
   teams:["Time 1","Time 2"],
   scores:[0,0],
   turn:0,
-  time:60, goal:15,
+  time:60, goal:15, mode:"maratona",
   cats:["acao","pessoa","filme","objeto","lugar","pesado","animal","esporte"],
   deck:[], di:0,
   roundHits:0, roundPass:0, roundLog:[],
-  current:null, timeLeft:60, tid:null,
+  current:null, timeLeft:60, tid:null, resolved:false,
 };
 
 const $=s=>document.querySelector(s);
@@ -474,6 +495,8 @@ $("#timeSeg").onclick=e=>{const b=e.target.closest(".seg");if(!b)return;
   $$("#timeSeg .seg").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.time=+b.dataset.t;buzz(8);};
 $("#goalSeg").onclick=e=>{const b=e.target.closest(".seg");if(!b)return;
   $$("#goalSeg .seg").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.goal=+b.dataset.g;buzz(8);};
+$("#modeSeg").onclick=e=>{const b=e.target.closest(".mode");if(!b)return;
+  $$("#modeSeg .mode").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.mode=b.dataset.m;buzz(8);};
 
 /* ---------------- Deck ---------------- */
 function buildDeck(){
@@ -515,16 +538,29 @@ function goToPass(){
 $("#beginRound").onclick=startRound;
 
 function startRound(){
-  S.roundHits=0; S.roundPass=0; S.roundLog=[]; S.timeLeft=S.time;
+  S.roundHits=0; S.roundPass=0; S.roundLog=[]; S.timeLeft=S.time; S.resolved=false;
   $("#playTurn").firstElementChild.textContent=S.teams[S.turn];
   $("#playTurn").style.setProperty("--tc",teamColor(S.turn));
+  if(S.mode==="single"){
+    $("#btnPass").innerHTML="Não consegui ⏭";
+    $("#endEarly").textContent="trocar mímica 🔄";
+  } else {
+    $("#btnPass").innerHTML="Passar ⏭";
+    $("#endEarly").textContent="encerrar rodada";
+  }
   show("s-play"); nextWord(); updateTimerUI();
   clearInterval(S.tid); S.tid=setInterval(tick,1000); buzz(30);
 }
 function tick(){
   S.timeLeft--; updateTimerUI();
   if(S.timeLeft<=5 && S.timeLeft>0) buzz(60);
-  if(S.timeLeft<=0){ clearInterval(S.tid); buzz([120,60,120,60,220]); endRound(); }
+  if(S.timeLeft<=0){
+    clearInterval(S.tid); buzz([120,60,120,60,220]);
+    if(S.mode==="single" && !S.resolved && S.current){
+      S.roundPass++; S.roundLog.push({word:S.current.word,cat:S.current.cat,ok:false});
+    }
+    endRound();
+  }
 }
 function updateTimerUI(){
   const m=Math.floor(S.timeLeft/60), s=S.timeLeft%60;
@@ -547,15 +583,25 @@ $("#btnHit").onclick=()=>{
   S.scores[S.turn]++; S.roundHits++;
   S.roundLog.push({word:S.current.word,cat:S.current.cat,ok:true});
   buzz(35); flash("#16a34a");
+  if(S.mode==="single"){
+    S.resolved=true; clearInterval(S.tid);
+    if(S.goal>0 && S.scores[S.turn]>=S.goal) return win();
+    return endRound();
+  }
   if(S.goal>0 && S.scores[S.turn]>=S.goal){ clearInterval(S.tid); return win(); }
   nextWord();
 };
 $("#btnPass").onclick=()=>{
   if(!S.current)return;
   S.roundPass++; S.roundLog.push({word:S.current.word,cat:S.current.cat,ok:false});
-  buzz(15); flash("#b45309"); nextWord();
+  buzz(15); flash("#b45309");
+  if(S.mode==="single"){ S.resolved=true; clearInterval(S.tid); return endRound(); }
+  nextWord();
 };
-$("#endEarly").onclick=()=>{ clearInterval(S.tid); buzz(20); endRound(); };
+$("#endEarly").onclick=()=>{
+  if(S.mode==="single"){ buzz(12); nextWord(); return; } // trocar mímica, sem penalidade
+  clearInterval(S.tid); buzz(20); endRound();
+};
 
 let flashEl=null;
 function flash(color){
@@ -569,6 +615,9 @@ function flash(color){
 
 /* ---------------- Summary ---------------- */
 function endRound(){
+  $("#sumEyebrow").textContent = S.mode==="single"
+    ? (S.roundHits>0 ? "Boa, acertou! 🎉" : "Não foi dessa vez")
+    : "Fim da rodada";
   $("#sumTeam").textContent=S.teams[S.turn];
   $("#sumTeam").style.setProperty("--tc",teamColor(S.turn));
   $("#sumHits").textContent="+"+S.roundHits;
