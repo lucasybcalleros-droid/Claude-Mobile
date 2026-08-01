@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#150018" />
+<title>Adultos em Ação — Mímica da Festa</title>
+<style>
+  :root{
+    --bg:#150018;
+    --bg2:#25062f;
+    --card:#20082a;
+    --card-2:#2c0d3a;
+    --line:rgba(255,255,255,.10);
+    --ink:#f6eaf1;
+    --mut:#c39fbb;
+    --mut2:#8f6c88;
+    --magenta:#ff2e88;
+    --magenta-deep:#c4155f;
+    --lime:#b8ff2e;
+    --amber:#ffb020;
+    --cyan:#39e0ff;
+    --violet:#a56bff;
+    --shadow:0 18px 50px -12px rgba(0,0,0,.7);
+    --r:22px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 90% at 15% -10%, #3a0b47 0%, transparent 55%),
+      radial-gradient(120% 100% at 100% 0%, #4a0730 0%, transparent 50%),
+      linear-gradient(180deg,var(--bg) 0%, #0d0011 100%);
+    background-attachment:fixed;
+    min-height:100dvh;
+    overflow-x:hidden;
+    -webkit-user-select:none;user-select:none;
+  }
+  .wrap{
+    max-width:520px;margin:0 auto;min-height:100dvh;
+    padding:max(18px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;
+  }
+  .display{font-weight:900;letter-spacing:-.02em;line-height:.95;text-transform:uppercase}
+  .eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--mut2)}
+
+  /* ---------- Screens ---------- */
+  .screen{display:none;flex:1;flex-direction:column;animation:fade .35s ease}
+  .screen.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.screen{animation:none}*{transition:none!important}}
+
+  /* ---------- Home / Setup ---------- */
+  .brand{text-align:center;margin:6vh 0 3vh}
+  .brand .kicker{color:var(--magenta);font-weight:800;letter-spacing:.32em;font-size:.7rem;text-transform:uppercase}
+  .brand h1{
+    margin:.35em 0 0;font-size:clamp(2.9rem,15vw,4.4rem);
+    background:linear-gradient(120deg,#fff 0%,var(--magenta) 45%,var(--violet) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(255,46,136,.25);
+  }
+  .brand p{color:var(--mut);margin:.9em auto 0;max-width:34ch;font-size:.98rem;line-height:1.45}
+
+  .card{background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+  .stack{display:flex;flex-direction:column;gap:16px}
+  .block h2{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0 0 11px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .block h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--magenta);box-shadow:0 0 10px var(--magenta)}
+
+  .teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .team-in{position:relative}
+  .team-in input{
+    width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--ink);
+    border-radius:14px;padding:14px 12px 14px 14px;font-size:1.02rem;font-weight:800;text-align:center;
+  }
+  .team-in input:focus{outline:none;border-color:var(--magenta);box-shadow:0 0 0 3px rgba(255,46,136,.2)}
+  .team-in.a input:focus{border-color:var(--magenta);box-shadow:0 0 0 3px rgba(255,46,136,.2)}
+  .team-in.b input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(57,224,255,.2)}
+
+  .segmented{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .seg{
+    background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--mut);
+    border-radius:14px;padding:14px 0;font-weight:900;font-size:1.05rem;cursor:pointer;transition:.15s;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .seg small{font-size:.6rem;font-weight:700;letter-spacing:.1em;color:var(--mut2);text-transform:uppercase}
+  .seg.on{background:linear-gradient(180deg,var(--magenta),var(--magenta-deep));color:#fff;border-color:transparent;box-shadow:0 8px 22px -8px var(--magenta)}
+  .seg.on small{color:rgba(255,255,255,.85)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{
+    border:1.5px solid var(--line);background:rgba(0,0,0,.22);color:var(--mut);
+    border-radius:999px;padding:10px 15px;font-weight:800;font-size:.9rem;cursor:pointer;transition:.15s;
+    display:flex;align-items:center;gap:8px;
+  }
+  .chip .ic{font-size:1.05rem;line-height:1}
+  .chip.on{color:#150018;border-color:transparent}
+  .chip[data-cat] .cdot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+  .chip.on{background:var(--c);box-shadow:0 6px 18px -6px var(--c)}
+  .chip.on .cdot{background:rgba(0,0,0,.45)}
+
+  .btn{
+    border:none;border-radius:16px;padding:17px;font-size:1.06rem;font-weight:900;letter-spacing:.02em;
+    cursor:pointer;width:100%;transition:transform .08s ease, filter .15s ease;text-transform:uppercase;
+  }
+  .btn:active{transform:scale(.975)}
+  .btn.primary{background:linear-gradient(120deg,var(--magenta),#ff5aa0);color:#fff;box-shadow:0 14px 30px -10px var(--magenta)}
+  .btn.ghost{background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--line)}
+  .btn.big{padding:20px;font-size:1.15rem}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .foot-note{text-align:center;color:var(--mut2);font-size:.78rem;margin-top:14px;line-height:1.5}
+
+  /* ---------- Scoreboard ---------- */
+  .score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px}
+  .score .sc{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:11px 8px;text-align:center;position:relative;overflow:hidden}
+  .score .sc.turnA{border-color:var(--magenta);box-shadow:0 0 0 3px rgba(255,46,136,.18) inset}
+  .score .sc.turnB{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(57,224,255,.18) inset}
+  .score .sc .nm{font-size:.72rem;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .score .sc .pt{font-size:2rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+  .score .sc.a .pt{color:var(--magenta)}
+  .score .sc.b .pt{color:var(--cyan)}
+  .score .vs{font-weight:900;color:var(--mut2);font-size:.85rem}
+
+  /* ---------- Pass phone ---------- */
+  .center-col{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:18px}
+  .pass-emoji{font-size:4.5rem;filter:drop-shadow(0 8px 20px rgba(0,0,0,.5))}
+  .turn-name{font-size:clamp(2rem,11vw,3rem);line-height:1;
+    background:linear-gradient(120deg,#fff,var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .turn-name.b{background:linear-gradient(120deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .center-col p{color:var(--mut);max-width:28ch;line-height:1.5;margin:0}
+
+  /* ---------- Play ---------- */
+  .play-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .timer{
+    display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.5rem;font-variant-numeric:tabular-nums;
+    background:rgba(0,0,0,.3);border:1px solid var(--line);padding:9px 16px;border-radius:999px;
+  }
+  .timer .ring{width:12px;height:12px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+  .timer.warn{color:var(--amber)} .timer.warn .ring{background:var(--amber);box-shadow:0 0 12px var(--amber)}
+  .timer.crit{color:#ff5a5a;animation:pulse .5s infinite} .timer.crit .ring{background:#ff5a5a;box-shadow:0 0 12px #ff5a5a}
+  @keyframes pulse{50%{opacity:.5}}
+  .turn-pill{font-weight:900;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;padding:8px 14px;border-radius:999px}
+  .turn-pill.a{background:rgba(255,46,136,.15);color:var(--magenta);border:1px solid rgba(255,46,136,.35)}
+  .turn-pill.b{background:rgba(57,224,255,.15);color:var(--cyan);border:1px solid rgba(57,224,255,.35)}
+
+  .word-card{
+    flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:20px;
+    border-radius:26px;padding:26px 22px;margin-bottom:16px;position:relative;overflow:hidden;
+    border:1px solid var(--line);background:linear-gradient(180deg,var(--card-2),var(--card));
+    box-shadow:var(--shadow);min-height:44vh;
+  }
+  .word-card::before{content:"";position:absolute;inset:0;opacity:.16;background:radial-gradient(80% 60% at 50% 0%,var(--cc,var(--magenta)),transparent 70%)}
+  .cat-badge{position:relative;z-index:1;display:inline-flex;align-items:center;gap:9px;font-weight:900;text-transform:uppercase;
+    letter-spacing:.1em;font-size:.82rem;padding:9px 16px;border-radius:999px;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--cc,var(--magenta))}
+  .cat-badge .ic{font-size:1.1rem}
+  .word{position:relative;z-index:1;font-size:clamp(2.2rem,10vw,3.4rem);font-weight:900;letter-spacing:-.02em;line-height:1.02;text-wrap:balance}
+  .word-hint{position:relative;z-index:1;color:var(--mut);font-size:.86rem;max-width:30ch;line-height:1.45;margin:0}
+
+  .actions{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}
+  .btn.pass{background:linear-gradient(180deg,rgba(255,176,32,.22),rgba(255,176,32,.1));color:var(--amber);border:1.5px solid rgba(255,176,32,.4)}
+  .btn.hit{background:linear-gradient(120deg,var(--lime),#7ee000);color:#0f2000;box-shadow:0 14px 30px -10px rgba(184,255,46,.5)}
+  .mini-ctrl{display:flex;justify-content:center;margin-top:12px}
+  .link-btn{background:none;border:none;color:var(--mut2);font-weight:700;font-size:.82rem;cursor:pointer;padding:8px;text-decoration:underline;text-underline-offset:3px}
+
+  /* ---------- Round summary ---------- */
+  .summary-hero{text-align:center;margin:2vh 0}
+  .summary-hero .big{font-size:clamp(2.4rem,12vw,3.4rem);line-height:1}
+  .tally{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+  .tally .box{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:18px;padding:16px;text-align:center}
+  .tally .box .n{font-size:2.4rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+  .tally .box.hit .n{color:var(--lime)} .tally .box.pass .n{color:var(--amber)}
+  .tally .box .l{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);font-weight:800;margin-top:6px}
+  .recap{display:flex;flex-direction:column;gap:7px;max-height:26vh;overflow-y:auto;margin:4px 0 18px;-webkit-overflow-scrolling:touch}
+  .recap-row{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;font-weight:700;font-size:.92rem}
+  .recap-row .m{margin-left:auto;font-size:1.1rem}
+  .recap-row.ok{border-color:rgba(184,255,46,.25)} .recap-row.no{border-color:rgba(255,176,32,.22);opacity:.75}
+
+  /* ---------- Winner ---------- */
+  .trophy{font-size:5rem;filter:drop-shadow(0 10px 26px rgba(0,0,0,.5));animation:bob 2.2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-10px)}}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
+
+  .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .top-bar .logo{font-weight:900;letter-spacing:-.01em;font-size:1rem}
+  .top-bar .logo b{color:var(--magenta)}
+  .icon-btn{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--mut);border-radius:12px;width:40px;height:40px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<canvas class="confetti hidden" id="confetti"></canvas>
+<div class="wrap">
+
+  <!-- ============ SETUP ============ -->
+  <section class="screen active" id="s-setup">
+    <div class="brand">
+      <div class="kicker">Mímica da Festa · +18</div>
+      <h1 class="display">Adultos<br>em Ação</h1>
+      <p>Divide a galera em dois times, passa o celular e atua sem falar. Quem adivinhar mais, ganha. Simples, rápido e sem vergonha.</p>
+    </div>
+
+    <div class="stack">
+      <div class="card block">
+        <h2><span class="dot"></span>Os times</h2>
+        <div class="teams">
+          <div class="team-in a"><input id="teamA" maxlength="14" value="Time Rosa" aria-label="Nome do time 1"></div>
+          <div class="team-in b"><input id="teamB" maxlength="14" value="Time Azul" aria-label="Nome do time 2"></div>
+        </div>
+      </div>
+
+      <div class="card block">
+        <h2><span class="dot"></span>Tempo por rodada</h2>
+        <div class="segmented" id="timeSeg">
+          <button class="seg" data-t="30">30<small>seg</small></button>
+          <button class="seg on" data-t="60">60<small>seg</small></button>
+          <button class="seg" data-t="90">90<small>seg</small></button>
+          <button class="seg" data-t="120">120<small>seg</small></button>
+        </div>
+      </div>
+
+      <div class="card block">
+        <h2><span class="dot"></span>Pontos pra vencer</h2>
+        <div class="segmented" id="goalSeg">
+          <button class="seg" data-g="10">10<small>pts</small></button>
+          <button class="seg on" data-g="15">15<small>pts</small></button>
+          <button class="seg" data-g="20">20<small>pts</small></button>
+          <button class="seg" data-g="0">∞<small>livre</small></button>
+        </div>
+      </div>
+
+      <div class="card block">
+        <h2><span class="dot"></span>Categorias</h2>
+        <div class="chips" id="catChips"></div>
+      </div>
+
+      <button class="btn primary big" id="startGame">Começar o jogo 🎭</button>
+      <p class="foot-note">Modo mímica: você <b>atua</b>, não fala e não faz sons. Combinaram tudo? Bora! 🔥</p>
+    </div>
+  </section>
+
+  <!-- ============ PASS PHONE ============ -->
+  <section class="screen" id="s-pass">
+    <div class="top-bar">
+      <div class="logo">Adultos <b>em Ação</b></div>
+      <button class="icon-btn" id="quitPass" aria-label="Sair">✕</button>
+    </div>
+    <div class="score" id="scorePass"></div>
+    <div class="center-col">
+      <div class="pass-emoji">📲</div>
+      <div class="eyebrow">Passa o celular pra</div>
+      <div class="turn-name display" id="passName">Time Rosa</div>
+      <p id="passHint">Escolha quem vai <b>atuar</b> agora. O resto do time adivinha. Sem falar, sem sons, só gesto!</p>
+      <button class="btn primary big" id="beginRound" style="max-width:320px">Estou pronto — começar ▶</button>
+    </div>
+  </section>
+
+  <!-- ============ PLAY ============ -->
+  <section class="screen" id="s-play">
+    <div class="play-top">
+      <div class="turn-pill a" id="playTurn">Time Rosa</div>
+      <div class="timer" id="timer"><span class="ring"></span><span id="timerTxt">1:00</span></div>
+    </div>
+    <div class="word-card" id="wordCard">
+      <div class="cat-badge" id="catBadge"><span class="ic">🎭</span><span id="catName">Ação</span></div>
+      <div class="word" id="word">Palavra</div>
+      <p class="word-hint" id="wordHint"></p>
+    </div>
+    <div class="actions">
+      <button class="btn pass" id="btnPass">Passar ⏭</button>
+      <button class="btn hit" id="btnHit">Acertou ✅</button>
+    </div>
+    <div class="mini-ctrl"><button class="link-btn" id="endEarly">encerrar rodada</button></div>
+  </section>
+
+  <!-- ============ ROUND SUMMARY ============ -->
+  <section class="screen" id="s-summary">
+    <div class="top-bar">
+      <div class="logo">Adultos <b>em Ação</b></div>
+      <button class="icon-btn" id="quitSum" aria-label="Sair">✕</button>
+    </div>
+    <div class="summary-hero">
+      <div class="eyebrow">Deu o tempo!</div>
+      <div class="big display" id="sumTeam">Time Rosa</div>
+    </div>
+    <div class="tally">
+      <div class="box hit"><div class="n" id="sumHits">0</div><div class="l">Acertos +</div></div>
+      <div class="box pass"><div class="n" id="sumPass">0</div><div class="l">Passou</div></div>
+    </div>
+    <div class="recap" id="recap"></div>
+    <div class="score" id="scoreSum" style="margin-top:auto"></div>
+    <button class="btn primary big" id="nextRound">Próximo time ▶</button>
+  </section>
+
+  <!-- ============ WINNER ============ -->
+  <section class="screen" id="s-winner">
+    <div class="center-col">
+      <div class="trophy">🏆</div>
+      <div class="eyebrow">Temos um campeão</div>
+      <div class="turn-name display" id="winName">Time Rosa</div>
+      <p id="winScore" style="font-size:1.1rem;color:var(--ink);font-weight:700"></p>
+      <p>Manda mais uma rodada ou volta pro início pra mudar os times.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px">
+        <button class="btn primary big" id="playAgain">Jogar de novo 🔁</button>
+        <button class="btn ghost" id="backHome">Mudar configurações</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   ADULTOS EM AÇÃO — jogo de mímica para festa
+   ============================================================ */
+
+const CATEGORIES = [
+  { id:"acao",   name:"Ação",          ic:"🏃", color:"#ff2e88", words:[
+    "Dançar funk","Fingir que tá bêbado","Tirar selfie","Espirrar","Beijar de língua",
+    "Fazer flexão","Roncar dormindo","Passar batom","Dar tchau chorando","Fazer strip-tease",
+    "Cortar cebola chorando","Puxar corda","Escovar os dentes","Tomar tequila","Fazer polichinelo",
+    "Rebolar","Chorar de novela","Assoprar vela","Malhar academia","Amarrar o sapato bêbado",
+    "Fazer careta de nojo","Coçar as costas","Trocar fralda","Fingir orgasmo","Dar em cima de alguém"
+  ]},
+  { id:"pessoa", name:"Famosos",       ic:"⭐", color:"#a56bff", words:[
+    "Anitta","Silvio Santos","Neymar","Faustão","Gretchen","Luísa Sonza",
+    "Whindersson Nunes","Xuxa","Pabllo Vittar","Ronaldinho Gaúcho","Ivete Sangalo","Tiririca",
+    "Wesley Safadão","MC Pipokinha","Galvão Bueno","Cauã Reymond","Juliette","Datena",
+    "Zeca Pagodinho","Gusttavo Lima"
+  ]},
+  { id:"filme",  name:"Filme & Série", ic:"🎬", color:"#39e0ff", words:[
+    "Titanic","Round 6","La Casa de Papel","Rei Leão","Velozes e Furiosos","Vingadores",
+    "Cidade de Deus","Tropa de Elite","De Volta para o Futuro","Homem-Aranha","Barbie","Piratas do Caribe",
+    "Jogos Vorazes","Harry Potter","Toy Story","O Exorcista","Stranger Things","Matrix",
+    "Rambo","O Auto da Compadecida"
+  ]},
+  { id:"objeto", name:"Objeto",        ic:"📦", color:"#ffb020", words:[
+    "Camisinha","Vibrador","Vassoura","Chinelo","Liquidificador","Ventilador",
+    "Escova de vaso","Guarda-chuva","Desentupidor","Sutiã","Rolo de pastel","Chuveiro",
+    "Cinto","Espeto de churrasco","Absorvente","Massageador","Extintor","Cortador de unha",
+    "Tanga fio-dental","Garrafa térmica"
+  ]},
+  { id:"lugar",  name:"Lugar",         ic:"📍", color:"#b8ff2e", words:[
+    "Balada","Motel","Praia de nudismo","Igreja","Sex shop","Academia",
+    "Banheiro de bar","Cartório","Puteiro","Zoológico","Salão de beleza","Boteco",
+    "Pronto-socorro","Sauna","Camarim","Delegacia","Cabaré","Vestiário",
+    "Baile funk","Karaokê"
+  ]},
+  { id:"pesado", name:"Pesadão +18",   ic:"🔥", color:"#ff5a5a", words:[
+    "Ficar com dois ao mesmo tempo","Levar um fora","Ressaca de tequila","Amasso no sofá",
+    "Mandar nude por engano","Corno manso","Pegação no escurinho","Pé na bunda",
+    "Fila do motel","Dança da cadeira +18","Cantada tosca","Show de pole dance",
+    "Terminar por áudio","Encoxada no metrô","Rolha de poço","Sexo por telefone",
+    "Ménage","Recalque de ex","Vergonha alheia","Beijo triplo"
+  ]},
+];
+
+const HINTS = {
+  acao:"Só gesto — mostra a ação inteira com o corpo.",
+  pessoa:"Imita o jeito, bordão ou marca registrada da pessoa.",
+  filme:"Faz sinal de 'filme/série' e mima as cenas famosas.",
+  objeto:"Mostra como se usa (ou finge segurar) o objeto.",
+  lugar:"O que rola nesse lugar? Encena o ambiente.",
+  pesado:"Criatividade e cara de pau — mima a cena sem exagerar no ao vivo!",
+};
+
+/* ---------------- State ---------------- */
+const S = {
+  teams:["Time Rosa","Time Azul"],
+  scores:[0,0],
+  turn:0,            // 0 = A, 1 = B
+  time:60,
+  goal:15,
+  cats:["acao","pessoa","filme","objeto","lugar","pesado"],
+  deck:[], di:0,
+  roundHits:0, roundPass:0, roundLog:[],
+  current:null,
+  timeLeft:60, tid:null,
+};
+
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const catById=id=>CATEGORIES.find(c=>c.id===id);
+
+/* ---------------- Build category chips ---------------- */
+(function(){
+  const box=$("#catChips");
+  CATEGORIES.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="chip on";b.dataset.cat=c.id;b.style.setProperty("--c",c.color);
+    b.innerHTML=`<span class="cdot"></span><span class="ic">${c.ic}</span>${c.name}`;
+    b.onclick=()=>{
+      b.classList.toggle("on");
+      const on=$$("#catChips .chip.on").map(x=>x.dataset.cat);
+      if(on.length===0){b.classList.add("on");buzz(15);return;} // never all-off
+      S.cats=$$("#catChips .chip.on").map(x=>x.dataset.cat);
+      buzz(8);
+    };
+    box.appendChild(b);
+  });
+})();
+
+/* ---------------- Segmented controls ---------------- */
+$("#timeSeg").onclick=e=>{const b=e.target.closest(".seg");if(!b)return;
+  $$("#timeSeg .seg").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.time=+b.dataset.t;buzz(8);};
+$("#goalSeg").onclick=e=>{const b=e.target.closest(".seg");if(!b)return;
+  $$("#goalSeg .seg").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.goal=+b.dataset.g;buzz(8);};
+
+/* ---------------- Utilities ---------------- */
+function buzz(ms){ if(navigator.vibrate) try{navigator.vibrate(ms)}catch(e){} }
+function show(id){ $$(".screen").forEach(s=>s.classList.remove("active")); $("#"+id).classList.add("active"); window.scrollTo(0,0); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function buildDeck(){
+  let d=[];
+  S.cats.forEach(cid=>{ catById(cid).words.forEach(w=>d.push({cat:cid,word:w})); });
+  S.deck=shuffle(d); S.di=0;
+}
+function drawCard(){
+  if(S.di>=S.deck.length){ buildDeck(); } // reshuffle if exhausted
+  return S.deck[S.di++];
+}
+
+function renderScore(elId){
+  const el=$(elId);
+  const [a,b]=S.scores;
+  el.innerHTML=`
+    <div class="sc a ${S.turn===0?'turnA':''}"><div class="nm">${escapeHtml(S.teams[0])}</div><div class="pt">${a}</div></div>
+    <div class="vs">VS</div>
+    <div class="sc b ${S.turn===1?'turnB':''}"><div class="nm">${escapeHtml(S.teams[1])}</div><div class="pt">${b}</div></div>`;
+}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------------- Start game ---------------- */
+$("#startGame").onclick=()=>{
+  S.teams=[ ($("#teamA").value.trim()||"Time 1").slice(0,14), ($("#teamB").value.trim()||"Time 2").slice(0,14) ];
+  S.scores=[0,0]; S.turn=0;
+  S.cats=$$("#catChips .chip.on").map(x=>x.dataset.cat);
+  if(S.cats.length===0)S.cats=["acao"];
+  buildDeck();
+  buzz(20);
+  goToPass();
+};
+
+function goToPass(){
+  const isA=S.turn===0;
+  $("#passName").textContent=S.teams[S.turn];
+  $("#passName").className="turn-name display"+(isA?"":" b");
+  renderScore("#scorePass");
+  show("s-pass");
+}
+
+/* ---------------- Round flow ---------------- */
+$("#beginRound").onclick=startRound;
+
+function startRound(){
+  S.roundHits=0; S.roundPass=0; S.roundLog=[];
+  S.timeLeft=S.time;
+  const isA=S.turn===0;
+  $("#playTurn").textContent=S.teams[S.turn];
+  $("#playTurn").className="turn-pill "+(isA?"a":"b");
+  show("s-play");
+  nextWord();
+  updateTimerUI();
+  clearInterval(S.tid);
+  S.tid=setInterval(tick,1000);
+  buzz(30);
+}
+
+function tick(){
+  S.timeLeft--;
+  updateTimerUI();
+  if(S.timeLeft<=5 && S.timeLeft>0) buzz(60);
+  if(S.timeLeft<=0){ clearInterval(S.tid); buzz([120,60,120,60,220]); endRound(); }
+}
+
+function updateTimerUI(){
+  const m=Math.floor(S.timeLeft/60), s=S.timeLeft%60;
+  $("#timerTxt").textContent=m+":"+String(s).padStart(2,"0");
+  const t=$("#timer"); t.classList.remove("warn","crit");
+  if(S.timeLeft<=5)t.classList.add("crit"); else if(S.timeLeft<=10)t.classList.add("warn");
+}
+
+function nextWord(){
+  const card=drawCard(); S.current=card;
+  const c=catById(card.cat);
+  const wc=$("#wordCard"); wc.style.setProperty("--cc",c.color);
+  $("#catBadge").style.color=c.color;
+  $("#catBadge").querySelector(".ic").textContent=c.ic;
+  $("#catName").textContent=c.name;
+  $("#word").textContent=card.word;
+  $("#wordHint").textContent=HINTS[card.cat]||"";
+}
+
+$("#btnHit").onclick=()=>{
+  if(!S.current)return;
+  S.scores[S.turn]++; S.roundHits++;
+  S.roundLog.push({word:S.current.word,cat:S.current.cat,ok:true});
+  buzz(35);
+  flash("#b8ff2e");
+  if(S.goal>0 && S.scores[S.turn]>=S.goal){ clearInterval(S.tid); return win(); }
+  nextWord();
+};
+$("#btnPass").onclick=()=>{
+  if(!S.current)return;
+  S.roundPass++;
+  S.roundLog.push({word:S.current.word,cat:S.current.cat,ok:false});
+  buzz(15);
+  flash("#ffb020");
+  nextWord();
+};
+$("#endEarly").onclick=()=>{ clearInterval(S.tid); buzz(20); endRound(); };
+
+/* subtle screen flash feedback */
+let flashEl=null;
+function flash(color){
+  if(!flashEl){ flashEl=document.createElement("div");
+    flashEl.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;transition:opacity .18s";
+    document.body.appendChild(flashEl);
+  }
+  flashEl.style.background=`radial-gradient(circle at center, ${color}22, transparent 70%)`;
+  flashEl.style.opacity="1";
+  setTimeout(()=>flashEl.style.opacity="0",120);
+}
+
+/* ---------------- Round summary ---------------- */
+function endRound(){
+  $("#sumTeam").textContent=S.teams[S.turn];
+  $("#sumTeam").style.color=S.turn===0?"var(--magenta)":"var(--cyan)";
+  $("#sumHits").textContent="+"+S.roundHits;
+  $("#sumPass").textContent=S.roundPass;
+  const r=$("#recap"); r.innerHTML="";
+  if(S.roundLog.length===0){ r.innerHTML=`<div class="recap-row no">Nenhuma carta jogada 🤷 <span class="m"></span></div>`; }
+  S.roundLog.forEach(x=>{
+    const c=catById(x.cat);
+    const row=document.createElement("div");
+    row.className="recap-row "+(x.ok?"ok":"no");
+    row.innerHTML=`<span style="font-size:1rem">${c.ic}</span>${escapeHtml(x.word)}<span class="m">${x.ok?"✅":"⏭"}</span>`;
+    r.appendChild(row);
+  });
+  renderScore("#scoreSum");
+  show("s-summary");
+}
+
+$("#nextRound").onclick=()=>{
+  S.turn=S.turn===0?1:0;
+  buzz(20);
+  goToPass();
+};
+
+/* ---------------- Winner ---------------- */
+function win(){
+  $("#winName").textContent=S.teams[S.turn];
+  $("#winName").className="turn-name display"+(S.turn===0?"":" b");
+  $("#winScore").textContent=`${S.teams[0]} ${S.scores[0]} — ${S.scores[1]} ${S.teams[1]}`;
+  show("s-winner");
+  confetti();
+  buzz([200,80,200,80,400]);
+}
+
+$("#playAgain").onclick=()=>{ S.scores=[0,0]; S.turn=0; buildDeck(); stopConfetti(); goToPass(); };
+$("#backHome").onclick=()=>{ stopConfetti(); show("s-setup"); };
+$("#quitPass").onclick=$("#quitSum").onclick=()=>{ clearInterval(S.tid); show("s-setup"); };
+
+/* ---------------- Confetti ---------------- */
+let confCtx,confId,confParts=[];
+function confetti(){
+  const cv=$("#confetti"); cv.classList.remove("hidden");
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=innerWidth*dpr; cv.height=innerHeight*dpr;
+  confCtx=cv.getContext("2d"); confCtx.scale(dpr,dpr);
+  const cols=["#ff2e88","#b8ff2e","#39e0ff","#ffb020","#a56bff","#ffffff"];
+  confParts=Array.from({length:140},()=>({
+    x:Math.random()*innerWidth, y:-20-Math.random()*innerHeight,
+    r:4+Math.random()*6, c:cols[Math.floor(Math.random()*cols.length)],
+    vy:2+Math.random()*3.5, vx:-1.5+Math.random()*3, rot:Math.random()*6.28, vr:-.2+Math.random()*.4
+  }));
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){ // static burst
+    confParts.forEach(p=>{p.y=Math.random()*innerHeight;draw1(p);}); return;
+  }
+  cancelAnimationFrame(confId); loopConf();
+}
+function draw1(p){ confCtx.save();confCtx.translate(p.x,p.y);confCtx.rotate(p.rot);
+  confCtx.fillStyle=p.c;confCtx.fillRect(-p.r/2,-p.r/2,p.r,p.r*.6);confCtx.restore(); }
+function loopConf(){
+  confCtx.clearRect(0,0,innerWidth,innerHeight);
+  let alive=false;
+  confParts.forEach(p=>{ p.y+=p.vy;p.x+=p.vx;p.rot+=p.vr;
+    if(p.y<innerHeight+20)alive=true; draw1(p); });
+  if(alive)confId=requestAnimationFrame(loopConf); else stopConfetti();
+}
+function stopConfetti(){ cancelAnimationFrame(confId); const cv=$("#confetti"); if(confCtx)confCtx.clearRect(0,0,cv.width,cv.height); cv.classList.add("hidden"); }
+
+/* prevent accidental pull-to-refresh / scroll during play */
+document.addEventListener("touchmove",e=>{ if($("#s-play").classList.contains("active"))e.preventDefault(); },{passive:false});
+</script>
+</body>
+</html>
