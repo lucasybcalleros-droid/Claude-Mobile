@@ -314,7 +314,17 @@ const CATEGORIES = [
     "Fazer flexão","Roncar dormindo","Passar batom","Dar tchau chorando","Fazer strip-tease",
     "Cortar cebola chorando","Puxar corda","Escovar os dentes","Tomar tequila","Fazer polichinelo",
     "Rebolar","Chorar de novela","Assoprar vela","Malhar academia","Amarrar o sapato bêbado",
-    "Fazer careta de nojo","Coçar as costas","Trocar fralda","Fingir orgasmo","Dar em cima de alguém"
+    "Fazer careta de nojo","Coçar as costas","Trocar fralda","Fingir orgasmo","Dar em cima de alguém",
+    "Lavar louça","Varrer a casa","Passar roupa","Dirigir carro","Nadar",
+    "Pescar","Tocar violão","Tocar bateria","Tocar piano","Cantar no chuveiro",
+    "Fazer a barba","Secar o cabelo com secador","Pintar as unhas","Costurar um botão","Mexer a panela no fogão",
+    "Jogar a massa de pizza pro alto","Bater um ovo","Descascar banana","Comer pipoca no cinema","Tomar sorvete derretendo",
+    "Passear com o cachorro","Dar banho no gato","Tirar selfie em grupo","Jogar videogame","Digitar no computador",
+    "Mandar áudio no WhatsApp","Torcer no estádio","Aplaudir de pé","Bocejar de sono","Tomar remédio amargo",
+    "Tomar injeção","Medir a febre","Fazer as malas","Correr pra pegar o ônibus","Contar dinheiro",
+    "Abrir um presente","Soprar velas de aniversário","Estourar uma bexiga","Fazer malabarismo","Domar leão no circo",
+    "Mágico tirando coelho da cartola","Palhaço fazendo graça","Imitar um robô","Fingir ser estátua","Andar como zumbi",
+    "Múmia enrolada","Super-herói voando","Ninja atacando","Cowboy laçando boi","Garçom equilibrando bandeja"
   ]},
   { id:"pessoa", name:"Famosos",       ic:"⭐", color:"#7c3aed", words:[
     "Anitta","Silvio Santos","Neymar","Faustão","Gretchen","Luísa Sonza",
@@ -362,6 +372,17 @@ const CATEGORIES = [
     "Mão na coxa por baixo da mesa","Flerte no WhatsApp de madrugada","Pegar geral na balada","Cafuné que evoluiu",
     "Amasso no banheiro da balada","Selfie ousada no motel","Nudez artística","Cinquenta tons de cinza"
   ]},
+  { id:"animal",  name:"Animais",       ic:"🐾", color:"#0d9488", words:[
+    "Cachorro","Gato","Elefante","Girafa","Macaco","Leão",
+    "Cobra","Sapo","Galinha","Pato","Cavalo","Vaca",
+    "Porco","Canguru","Pinguim","Gorila","Urso","Coelho",
+    "Aranha","Caranguejo","Golfinho","Tubarão","Águia","Morcego","Preguiça"
+  ]},
+  { id:"esporte", name:"Esporte",       ic:"⚽", color:"#2563eb", words:[
+    "Futebol","Basquete","Vôlei","Tênis","Boxe","Natação",
+    "Surfe","Skate","Boliche","Golfe","Ciclismo","Corrida",
+    "Levantamento de peso","Ginástica olímpica","Escalada"
+  ]},
 ];
 
 const HINTS = {
@@ -371,6 +392,8 @@ const HINTS = {
   objeto:"Mostra como se usa (ou finge segurar) o objeto.",
   lugar:"O que rola nesse lugar? Encena o ambiente.",
   pesado:"Criatividade e cara de pau — mima a cena sem exagerar no ao vivo!",
+  animal:"Imita o bicho — o jeito de andar e de se mexer, sem fazer som.",
+  esporte:"Encena o esporte com os gestos típicos dele.",
 };
 
 /* palette for teams — up to 8 distinct hues */
@@ -383,7 +406,7 @@ const S = {
   scores:[0,0],
   turn:0,
   time:60, goal:15,
-  cats:["acao","pessoa","filme","objeto","lugar","pesado"],
+  cats:["acao","pessoa","filme","objeto","lugar","pesado","animal","esporte"],
   deck:[], di:0,
   roundHits:0, roundPass:0, roundLog:[],
   current:null, timeLeft:60, tid:null,
